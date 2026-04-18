@@ -1,7 +1,7 @@
 package org.shujaat;
 
 import java.io.File;
-import java.io.FileNotFoundException;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.Scanner;
 
@@ -17,8 +17,14 @@ public class App {
         // the subfolder folders of parentfolder and serachs for the result;
 
         ArrayList<File> filesList = new ArrayList<>();
-        final String ROOT_FOLDER_PATH = "/home/snowblind/vscodeProjects";
-        final String KEYWORD = "labubu";
+
+        if (args.length < 2) {
+            System.out.println("Usage : findword <path> <keyword>");
+            return;
+        }
+        final String ROOT_FOLDER_PATH = args[0];
+        final String KEYWORD = args[1];
+
         File rootFolder = new File(ROOT_FOLDER_PATH);
 
         if (!rootFolder.exists() || !rootFolder.isDirectory()) {
@@ -51,5 +57,32 @@ public class App {
 
     public static void readFiles(ArrayList<File> files, String keyword) {
 
+        if (!files.isEmpty()) {
+            for (File file : files) {
+                int lineNumber = 0;
+
+                try (Scanner scanner = new Scanner(file)) {
+
+                    while (scanner.hasNext()) {
+                        lineNumber++;
+                        String line = scanner.nextLine();
+
+                        if (line.toLowerCase().contains(keyword.toLowerCase())) {
+
+                            System.out.println("your word " + keyword + " was found in file : " + file.getAbsolutePath()
+                                    + " at line number " + lineNumber);
+                            System.out.println("---------------------------------------------------");
+                            return;
+                        }
+                    }
+
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+        if (!isPresent) {
+            System.out.println("your word not found in the directory");
+        }
     }
 }
