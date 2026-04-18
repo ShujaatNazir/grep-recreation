@@ -3,6 +3,7 @@ package org.shujaat;
 import java.io.File;
 
 public class App {
+
     public static void main(String[] args) {
         // --> mini tasks , give the root folder , and the keyword , find the keyword in
         // the files , if the file is the directory go isnide the direcotry and do the
@@ -12,44 +13,34 @@ public class App {
 
         final String rootFolderPath = "/home/snowblind/vscodeProjects";
 
-        File folder = new File(rootFolderPath);
+        File rootFolder = new File(rootFolderPath);
 
         // checking if the dir exists or is it vaild
-        if (!folder.exists() || !folder.isDirectory()) {
+        if (!rootFolder.exists() || !rootFolder.isDirectory()) {
             System.out.println("Either the folder does not exist , or the folder path is invalid");
             return;
         }
 
-        String[] dirEntities = folder.list();
+        // moved the logic into a function that will cann itself again and again unitl
+        // if find the files out
 
-        // now the problem if the dirEntites is a file just stop and print the name , if
-        // the dirEntity is a direcotry , keep going insider unit the files is found and
-        // return the file
+        listAllFiles(rootFolder);
+    }
 
-        for (String entity : dirEntities) {
+    public static void listAllFiles(File folder) {
+        File[] folderEntites = folder.listFiles(); // new nethod listFiles that return array of files and directory
+                                                   // directly
 
-            // trying to check if the entity is a file or folder
-            File entityToRead = new File(folder, entity);
+        if (folderEntites != null) {
+            for (File entity : folderEntites) {
 
-            if (entityToRead.isDirectory()) {
-
-                File newEntityFiles = new File(entity);
-                String[] newEntityFilesList = newEntityFiles.list();
-
-                if (newEntityFilesList != null) {
-                    for (String newFiles : newEntityFilesList) {
-                        System.out.println(newFiles);
-                    }
+                if (entity.isDirectory()) {
+                    System.out.println("Entering Directory : " + entity.getAbsolutePath());
+                    listAllFiles(entity);
+                } else {
+                    System.out.println("File : " + entity.getName());
                 }
-
-            } else {
-                System.out.println(entity);
             }
-
-            // if have ran into a problem , the infinite subfolder -- i learned about the
-            // recursion and new method called .listFiles() which gives file objects
-            // directly
-
         }
 
     }
