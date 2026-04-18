@@ -1,48 +1,64 @@
 package org.shujaat;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.util.Scanner;
 
 public class App {
 
+    static boolean isPresent = false;
+
     public static void main(String[] args) {
-        // --> mini tasks , give the root folder , and the keyword , find the keyword in
-        // the files , if the file is the directory go isnide the direcotry and do the
-        // same
 
-        // first let me try to list all the files of the root folder;
+        // i learned how to read from a file;
+        // i learned how to list all the files in the directory
+        // now combining these two i will try to make a word finder that looks into all
+        // the subfolder folders of parentfolder and serachs for the result;
 
-        final String rootFolderPath = "/home/snowblind/vscodeProjects";
+        final String ROOT_FOLDER_PATH = "/home/snowblind/vscodeProjects";
+        final String KEYWORD = "imposter";
+        File rootFolder = new File(ROOT_FOLDER_PATH);
 
-        File rootFolder = new File(rootFolderPath);
-
-        // checking if the dir exists or is it vaild
         if (!rootFolder.exists() || !rootFolder.isDirectory()) {
-            System.out.println("Either the folder does not exist , or the folder path is invalid");
-            return;
+            System.out.println("invalid path");
         }
 
-        // moved the logic into a function that will cann itself again and again unitl
-        // if find the files out
+        findKeyword(rootFolder, KEYWORD);
 
-        listAllFiles(rootFolder);
+        if (isPresent) {
+
+            System.out.println("your word was found");
+        } else {
+            System.out.println("your word was not found");
+        }
     }
 
-    public static void listAllFiles(File folder) {
-        File[] folderEntites = folder.listFiles(); // new nethod listFiles that return array of files and directory
-                                                   // directly
+    public static void findKeyword(File folder, String keyword) {
+
+        File[] folderEntites = folder.listFiles();
 
         if (folderEntites != null) {
             for (File entity : folderEntites) {
 
                 if (entity.isDirectory()) {
-                    System.out.println("Entering Directory : " + entity.getAbsolutePath());
-                    listAllFiles(entity);
+                    if (!isPresent) {
+                        findKeyword(entity, keyword);
+                    }
                 } else {
-                    System.out.println("File : " + entity.getName());
+                    try (Scanner scanner = new Scanner(entity)) {
+                        while (scanner.hasNext()) {
+                            String word = scanner.next();
+
+                            if (word.equalsIgnoreCase(keyword)) {
+                                isPresent = true;
+                                break;
+                            }
+                        }
+                    } catch (FileNotFoundException e) {
+                        System.out.println(e.getMessage());
+                    }
                 }
             }
         }
-
     }
-
 }
