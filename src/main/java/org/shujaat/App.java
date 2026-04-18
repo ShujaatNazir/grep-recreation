@@ -2,6 +2,7 @@ package org.shujaat;
 
 import java.io.File;
 import java.io.FileNotFoundException;
+import java.util.ArrayList;
 import java.util.Scanner;
 
 public class App {
@@ -15,50 +16,40 @@ public class App {
         // now combining these two i will try to make a word finder that looks into all
         // the subfolder folders of parentfolder and serachs for the result;
 
+        ArrayList<File> filesList = new ArrayList<>();
         final String ROOT_FOLDER_PATH = "/home/snowblind/vscodeProjects";
-        final String KEYWORD = "imposter";
+        final String KEYWORD = "labubu";
         File rootFolder = new File(ROOT_FOLDER_PATH);
 
         if (!rootFolder.exists() || !rootFolder.isDirectory()) {
             System.out.println("invalid path");
         }
 
-        findKeyword(rootFolder, KEYWORD);
-
-        if (isPresent) {
-
-            System.out.println("your word was found");
-        } else {
-            System.out.println("your word was not found");
-        }
+        ArrayList<File> allDirFiles = getAllFiles(rootFolder, filesList);
+        readFiles(allDirFiles, KEYWORD);
     }
 
-    public static void findKeyword(File folder, String keyword) {
+    public static ArrayList<File> getAllFiles(File folder, ArrayList<File> list) {
 
-        File[] folderEntites = folder.listFiles();
+        File[] folderEntities = folder.listFiles();
 
-        if (folderEntites != null) {
-            for (File entity : folderEntites) {
+        if (folderEntities != null) {
 
+            for (File entity : folderEntities) {
                 if (entity.isDirectory()) {
-                    if (!isPresent) {
-                        findKeyword(entity, keyword);
-                    }
-                } else {
-                    try (Scanner scanner = new Scanner(entity)) {
-                        while (scanner.hasNext()) {
-                            String word = scanner.next();
 
-                            if (word.equalsIgnoreCase(keyword)) {
-                                isPresent = true;
-                                break;
-                            }
-                        }
-                    } catch (FileNotFoundException e) {
-                        System.out.println(e.getMessage());
-                    }
+                    getAllFiles(entity, list);
+                } else {
+
+                    list.add(entity);
                 }
             }
         }
+
+        return list;
+    }
+
+    public static void readFiles(ArrayList<File> files, String keyword) {
+
     }
 }
